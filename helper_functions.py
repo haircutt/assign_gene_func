@@ -1,3 +1,6 @@
+from Bio.Align import substitution_matrices
+
+
 def global_alignment(seq1, seq2, scoring_function):
     """Global sequence alignment using the Needleman–Wunsch algorithm.
 
@@ -117,3 +120,11 @@ def local_alignment(seq1, seq2, scoring_function):
 def scoring_function_simple(aa_i,aa_j):
     score = [-1, 1][aa_i == aa_j]
     return (score)
+
+
+_BLOSUM62 = substitution_matrices.load("BLOSUM62")
+
+
+def scoring_function_blosum62(aa_i, aa_j):
+    """Return the BLOSUM62 substitution score for two amino acids."""
+    return float(_BLOSUM62[aa_i, aa_j])
