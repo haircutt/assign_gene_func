@@ -31,7 +31,7 @@ def global_alignment(seq1, seq2, scoring_function):
     Other alignments are not possible.
 
     """
-    gap_score = -1
+    gap_score = -1  # gap penalty for global alignment - should be adjustable
     rows = len(seq1) + 1
     columns = len(seq2) + 1
     score_matrix = [[0] * columns for _ in range(rows)]
@@ -112,7 +112,7 @@ def local_alignment(seq1, seq2, scoring_function):
     Other alignments are not possible.
 
     """
-    raise NotImplementedError()
+    
 
 
 
@@ -128,3 +128,4 @@ _BLOSUM62 = substitution_matrices.load("BLOSUM62")
 def scoring_function_blosum62(aa_i, aa_j):
     """Return the BLOSUM62 substitution score for two amino acids."""
     return float(_BLOSUM62[aa_i, aa_j])
+
