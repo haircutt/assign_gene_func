@@ -112,7 +112,45 @@ def local_alignment(seq1, seq2, scoring_function):
     Other alignments are not possible.
 
     """
+    rows = len(seq1) + 1
+    columns = len(seq2) + 1
+    score_matrix = [[0] * columns for _ in range(rows)]
+    gap_score = -1
+    max_score = 0
+    max_pos = (0, 0)
     
+    for i in range(1, rows):
+        for j in range(1, columns):
+            diagonal = score_matrix[i - 1][j - 1] + scoring_function(seq1[i - 1], seq2[j - 1])
+            up = score_matrix[i - 1][j] + gap_score
+            left = score_matrix[i][j - 1] + gap_score
+            score_matrix[i][j] = max(0, diagonal, up, left)
+            if score_matrix[i][j] > max_score:
+                max_score = score_matrix[i][j]
+                max_pos = (i, j)
+    aligned_seq1 = []
+    aligned_seq2 = []
+    i, j = max_pos
+    while i > 0 and j > 0 and score_matrix[i][j] > 0:
+        if score_matrix[i][j] == score_matrix[i - 1][j - 1] + scoring_function(seq1[i - 1], seq2[j - 1]):
+            aligned_seq1.append(seq1[i - 1])
+            aligned_seq2.append(seq2[j - 1])
+            i -= 1
+            j -= 1
+        elif i > 0 and score_matrix[i][j] == score_matrix[i - 1][j] + gap_score:
+            aligned_seq1.append(seq1[i - 1])
+            aligned_seq2.append("-")
+            i -= 1
+        else:
+            aligned_seq1.append("-")
+            aligned_seq2.append(seq2[j - 1])
+            j -= 1
+
+    return (
+        "".join(reversed(aligned_seq1)),
+        "".join(reversed(aligned_seq2)),
+        float(max_score),
+    )
 
 
 
@@ -128,4 +166,6 @@ _BLOSUM62 = substitution_matrices.load("BLOSUM62")
 def scoring_function_blosum62(aa_i, aa_j):
     """Return the BLOSUM62 substitution score for two amino acids."""
     return float(_BLOSUM62[aa_i, aa_j])
+
+
 
